@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy New Year 💖</title>
+  <meta name="description" content="A cheerful Happy New Year card with floating hearts, animated text, and interactive moments." />
+  <style>
+    :root{
+      --bg1: #ffd6e8;
+      --bg2: #ffb6d5;
+      --card-bg: rgba(255,255,255,0.35);
+      --accent: #ff4f9a;
+      --accent-2: #d63384;
+      --text: #8b2c5c;
+      --heart: #ff5fa2;
+      --shadow: rgba(255,105,180,0.4);
+      --card-radius: 24px;
+    }
+
+    /* Reset & layout */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      overflow:auto;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding: 48px 20px;
+    }
+
+    /* Intro screen */
+    .intro {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      z-index: 10;
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    .intro.hidden {
+      opacity: 0;
+      transform: scale(0.9);
+      pointer-events: none;
+    }
+
+    .intro-content {
+      text-align: center;
+      color: var(--accent);
+      position: relative;
+      z-index: 11;
+    }
+
+    .intro-message {
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: 700;
+      margin-bottom: 20px;
+      animation: fadeInUp 2s ease-out, pulse 2s infinite 2s;
+    }
+
+    .enter-btn {
+      padding: 12px 24px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      animation: fadeInUp 2s ease-out 1s both, bounce 1s infinite 3s;
+    }
+
+    .enter-btn:hover {
+      background: var(--accent-2);
+      transform: scale(1.05);
+    }
+
+    /* Background SHREYA animation */
+    .background-shreya {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(5rem, 20vw, 15rem);
+      color: rgba(255, 79, 154, 0.1);
+      font-weight: 900;
+      z-index: 8;
+      animation: fadeInShreya 3s ease-out;
+      pointer-events: none;
+    }
+
+    /* Floating stars on intro */
+    .floating-stars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .star {
+      position: absolute;
+      font-size: 2rem;
+      animation: floatStar 6s linear infinite;
+      opacity: 0.7;
+    }
+
+    .star:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .star:nth-child(2) { left: 30%; animation-delay: 1s; }
+    .star:nth-child(3) { left: 50%; animation-delay: 2s; }
+    .star:nth-child(4) { left: 70%; animation-delay: 3s; }
+    .star:nth-child(5) { left: 90%; animation-delay: 4s; }
+
+    /* Intro hearts */
+    .intro-hearts {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9;
+    }
+
+    .intro-heart {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: var(--heart);
+      transform: rotate(45deg);
+      opacity: 0.8;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+      animation: floatHeart 8s linear infinite;
+    }
+
+    .intro-heart::before,
+    .intro-heart::after {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: var(--heart);
+      border-radius: 50%;
+    }
+
+    .intro-heart::before { top: -12px; left: 0; }
+    .intro-heart::after { left: -12px; top: 0; }
+
+    .intro-heart:nth-child(1) { left: 5%; animation-delay: -1s; }
+    .intro-heart:nth-child(2) { left: 15%; animation-delay: -2s; }
+    .intro-heart:nth-child(3) { left: 25%; animation-delay: -3s; }
+    .intro-heart:nth-child(4) { left: 35%; animation-delay: -4s; }
+    .intro-heart:nth-child(5) { left: 45%; animation-delay: -5s; }
+    .intro-heart:nth-child(6) { left: 55%; animation-delay: -6s; }
+    .intro-heart:nth-child(7) { left: 65%; animation-delay: -7s; }
+    .intro-heart:nth-child(8) { left: 75%; animation-delay: -8s; }
+    .intro-heart:nth-child(9) { left: 85%; animation-delay: -9s; }
+    .intro-heart:nth-child(10) { left: 95%; animation-delay: -10s; }
+
+    /* Card */
+    .card{
+      background:var(--card-bg);
+      padding:32px 48px;
+      border-radius:var(--card-radius);
+      text-align:center;
+      box-shadow:0 10px 30px var(--shadow);
+      z-index:2;
+      backdrop-filter: blur(6px);
+      max-width:720px;
+      width:calc(100% - 48px);
+      transition: all 0.5s ease;
+      opacity: 0;
+      transform: scale(0.9);
+      margin: 0 auto;
+    }
+
+    .card.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    h1{
+      font-size: clamp(28px, 4vw, 48px);
+      color:var(--accent);
+      margin:0 0 8px;
+      line-height:1.05;
+      animation: fadeInUp 1.5s ease-out;
+    }
+
+    h2{
+      font-size: clamp(20px, 3vw, 32px);
+      color:var(--accent-2);
+      margin:8px 0;
+      font-weight:600;
+      animation: fadeInUp 1.5s ease-out 0.5s both;
+    }
+
+    p{
+      color:var(--text);
+      font-size:clamp(14px,2vw,20px);
+      margin:8px 0 0;
+      animation: fadeInUp 1.5s ease-out 1s both;
+    }
+
+    .name{
+      margin-top:18px;
+      font-size:clamp(18px,2.2vw,26px);
+      color:#ff2f92;
+      font-weight:700;
+      animation: fadeInUp 1.5s ease-out 1.5s both;
+    }
+
+    .moments {
+      margin-top: 20px;
+      font-size: clamp(14px, 2vw, 18px);
+      color: var(--text);
+      line-height: 1.6;
+      animation: typeWriter 3s steps(40, end) 2s both;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid var(--accent);
+    }
+
+    .best-moments {
+      display: none;
+      margin-top: 20px;
+      font-size: clamp(14px, 2vw, 18px);
+      color: var(--text);
+      line-height: 1.6;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+    }
+
+    .best-moments.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .next-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      animation: fadeInUp 1.5s ease-out 2.5s both;
+    }
+
+    .next-btn:hover {
+      background: var(--accent-2);
+    }
+
+    .sorry-section {
+      display: none;
+      margin-top: 30px;
+      opacity: 0;
+      transform: translateY(30px) scale(0.98);
+      transition: all 0.6s cubic-bezier(.2,.8,.2,1);
+      width: 100%;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .sorry-section.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .sorry-blocks {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .sorry-block {
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.85));
+      padding: 14px 18px;
+      border-radius: 12px;
+      min-width: 180px;
+      max-width: 320px;
+      font-size: clamp(13px, 1.5vw, 16px);
+      color: var(--text);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      transform: translateY(18px);
+      opacity: 0;
+      transition: all 0.6s ease;
+    }
+
+    .sorry-block.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .sorry-block h3 {
+      margin: 0 0 8px;
+      color: var(--accent-2);
+      font-size: 16px;
+    }
+
+    .sorry-block p {
+      margin: 0;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .open-sorry-btn {
+      margin-top: 18px;
+      padding: 10px 20px;
+      background: rgba(255,79,154,0.95);
+      color: white;
+      border: none;
+      border-radius: 18px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform .15s ease, background .2s ease;
+    }
+    .open-sorry-btn:hover { transform: translateY(-3px); background: var(--accent-2); }
+
+    /* small helper: final footer */
+    .final-note {
+      margin-top: 18px;
+      color: var(--text);
+      font-size: 13px;
+      opacity: .9;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
+    }
+
+    @keyframes fadeInShreya {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    @keyframes floatStar {
+      0% { transform: translateY(100vh) rotate(0deg); }
+      100% { transform: translateY(-10vh) rotate(360deg); }
+    }
+
+    @keyframes floatHeart {
+      0% { transform: translateY(110vh) rotate(45deg) scale(1); opacity: 0.8; }
+      60% { opacity: 0.9; }
+      100% { transform: translateY(-10vh) rotate(45deg) scale(0.9); opacity: 0.5; }
+    }
+
+    @keyframes typeWriter {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    /* Floating hearts container (decorative) */
+    .hearts {
+      position:fixed;
+      inset:0;
+      pointer-events:none; /* purely decorative */
+      z-index:1;
+      overflow:hidden;
+    }
+
+    .heart {
+      position:absolute;
+      width:22px;
+      height:22px;
+      background:var(--heart);
+      transform: rotate(45deg);
+      opacity:0.8;
+      filter:drop-shadow(0 6px 12px rgba(0,0,0,0.06));
+      will-change: transform, opacity;
+      --duration: 8s;
+      animation: float var(--duration) linear infinite;
+    }
+    .heart::before,
+    .heart::after{
+      content:"";
+      position:absolute;
+      width:22px;
+      height:22px;
+      background:var(--heart);
+      border-radius:50%;
+    }
+    .heart::before{ top:-11px; left:0; }
+    .heart::after{ left:-11px; top:0; }
+
+    /* Different sizes / speeds */
+    .heart.small{ width:14px; height:14px; }
+    .heart.small::before,.heart.small::after{ width:14px; height:14px; top:-7px; left:0; left:-7px; }
+    .heart.large{ width:30px; height:30px; }
+    .heart.large::before,.heart.large::after{ width:30px; height:30px; top:-15px; left:0; left:-15px; }
+
+    @keyframes float {
+      0% { transform: translateY(110vh) rotate(45deg) scale(1); opacity:0.85; }
+      60% { opacity:0.95; }
+      100% { transform: translateY(-10vh) rotate(45deg) scale(.9); opacity:0.6; }
+    }
+
+    /* Respect user's reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .heart, .intro-heart { animation: none; opacity: 0.7; transform: translateY(0) rotate(45deg); }
+      .intro-message, .enter-btn, .star, .background-shreya { animation: none; opacity: 1; }
+      h1, h2, p, .name, .moments, .best-moments, .next-btn, .sorry-section, .sorry-block { animation: none; opacity: 1; transform:none; }
+    }
+
+    /* Responsive padding on small screens */
+    @media (max-width:420px){
+      .card{ padding:20px; border-radius:16px; }
+      .sorry-blocks { flex-direction: column; align-items: center; }
+      body { padding: 20px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Intro screen -->
+  <div class="intro" id="intro">
+    <div class="background-shreya">SHREYA</div>
+    <div class="intro-hearts" aria-hidden="true">
+      <div class="intro-heart"></div>
+      <div class="intro-heart"></div>
+      <div class="intro-heart"></div>
+      <div class="intro-heart"></div>
+      <div class="intro-heart"></div>
+      <div class="intro-heart"></div>
+      <div class="intro-heart"></div>
+      <div class="intro-heart"></div>
+      <div class="intro-heart"></div>
+      <div class="intro-heart"></div>
+    </div>
+    <div class="floating-stars" aria-hidden="true">
+      <div class="star">⭐</div>
+      <div class="star">✨</div>
+      <div class="star">🌟</div>
+      <div class="star">💫</div>
+      <div class="star">⭐</div>
+    </div>
+    <div class="intro-content">
+      <div class="intro-message">🌸hey, Shreya here something for you, my cute princess (Butke)👑💖, are you excited?🌸</div>
+      <button class="enter-btn" onclick="enterPage()" aria-label="Enter card">Click Here</button>
+    </div>
+  </div>
+
+  <!-- Decorative hearts: aria-hidden because they are purely visual -->
+  <div class="hearts" aria-hidden="true">
+    <div class="heart small" style="left:8%; --duration:7s; animation-delay: -1s;"></div>
+    <div class="heart" style="left:22%; --duration:9s; animation-delay: -3s;"></div>
+    <div class="heart large" style="left:40%; --duration:6.5s; animation-delay: -2s;"></div>
+    <div class="heart" style="left:56%; --duration:10s; animation-delay: -5s;"></div>
+    <div class="heart small" style="left:70%; --duration:8.2s; animation-delay: -4s;"></div>
+    <div class="heart" style="left:86%; --duration:7.6s; animation-delay: -6s;"></div>
+  </div>
+
+  <main class="card" id="mainCard" role="main" aria-labelledby="title">
+    <h1 id="title">🎉 Happy New Year 2026 🎉</h1>
+    <h2>💖 With Love & Smiles 💖</h2>
+    <p>May this New Year bring you joy, happiness,<br>success, and lots of love 💕</p>
+
+    <div class="moments" id="moments">Cherished moments of 2025 with you: Our laughter-filled adventures, cozy movie nights, surprise celebrations, and the countless ways you brightened my days. Here's to even more magic in 2026! ✨</div>
+
+    <button class="next-btn" id="showMomBtn" onclick="showBestMoments()">Next: Thank You</button>
+
+    <!-- Best moments block (revealed when Next is clicked) -->
+    <div class="best-moments" id="bestMom">
+      <div style="font-weight:700; color:var(--accent-2); margin-bottom:10px;">Thank you for being you — some of my favorite moments:</div>
+      <ul style="text-align:left; display:inline-block; margin:0; padding-left:18px; color:var(--text);">
+        <li>Our surprise picnic by the lake 🌤️</li>
+        <li>That silly road trip when everything went wrong and we still laughed 🚗😂</li>
+        <li>Movie nights and the snacks you always sneak in 🍿</li>
+        <li>Your hand in mine during the fireworks 🎆</li>
+      </ul>
+      <div style="margin-top:14px;">
+        <button class="open-sorry-btn" onclick="showSorryPage()" aria-label="Open Sorry Page">Open Sorry Page</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Sorry section (at the end of the page) -->
+  <section class="sorry-section" id="sorrySection" aria-labelledby="sorryTitle">
+    <div class="card" style="padding:24px 28px; border-radius:18px;">
+      <h2 id="sorryTitle" style="margin-top:0; color:var(--accent-2);">A Little Sorry — From Me to You</h2>
+      <p style="margin:0; color:var(--text);">Before all the celebrations, there's something I want to say. These are my small apologies and warm wishes for us moving forward.</p>
+
+      <div class="sorry-blocks" id="sorryBlocks" style="margin-top:16px;">
+        <div class="sorry-block" data-delay="0.05">
+          <h3>Sorry for the little fights</h3>
+          <p>They were never worth it — I value you more than being right.</p>
+        </div>
+
+        <div class="sorry-block" data-delay="0.15">
+          <h3>Sorry for being distant</h3>
+          <p>Sometimes I get lost in my head — I promise to be better at sharing.</p>
+        </div>
+
+        <div class="sorry-block" data-delay="0.25">
+          <h3>Sorry for missed moments</h3>
+          <p>The moments I missed matter — I will make more time for us.</p>
+        </div>
+
+        <div class="sorry-block" data-delay="0.35">
+          <h3>Thank you for patience</h3>
+          <p>Your kindness teaches me to be kinder every day.</p>
+        </div>
+
+        <div class="sorry-block" data-delay="0.45">
+          <h3>I love you</h3>
+          <p>More than words — and I can't wait for our next chapter together.</p>
+        </div>
+
+        <div class="sorry-block" data-delay="0.55">
+          <h3>Promise</h3>
+          <p>I will try to listen, to laugh, and to always say 'I'm sorry' when I should.</p>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <div class="final-note">Click any message to give it a little love 💗</div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Initialize: hide intro only after load, show card when entering
+    const intro = document.getElementById('intro');
+    const mainCard = document.getElementById('mainCard');
+    const bestMom = document.getElementById('bestMom');
+    const showMomBtn = document.getElementById('showMomBtn');
+    const sorrySection = document.getElementById('sorrySection');
+    const sorryBlocks = document.getElementById('sorryBlocks');
+
+    function enterPage(){
+      intro.classList.add('hidden');
+      // show main card
+      setTimeout(()=> {
+        mainCard.classList.add('show');
+        // focus for accessibility
+        mainCard.setAttribute('tabindex','-1');
+        mainCard.focus();
+      }, 500);
+    }
+
+    function showBestMoments(){
+      bestMom.classList.add('show');
+      // smooth scroll to best moments (they are inside the card, but we still ensure visibility)
+      setTimeout(()=> {
+        bestMom.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 200);
+    }
+
+    function showSorryPage(){
+      // reveal sorry section at the end
+      sorrySection.classList.add('show');
+      // animate each sorry block with stagger
+      const blocks = Array.from(sorryBlocks.querySelectorAll('.sorry-block'));
+      blocks.forEach((b, i) => {
+        const delay = parseFloat(b.dataset.delay || (i * 0.08));
+        b.style.transitionDelay = (delay) + 's';
+        // small timeout so transition applies after display:block
+        setTimeout(() => b.classList.add('visible'), 50 + delay*1000);
+        // allow clicking to give a little scale feedback
+        b.addEventListener('click', () => {
+          b.animate([
+            { transform: 'translateY(0) scale(1)', boxShadow: '0 8px 20px rgba(0,0,0,0.08)' },
+            { transform: 'translateY(-6px) scale(1.02)', boxShadow: '0 12px 30px rgba(0,0,0,0.12)' },
+            { transform: 'translateY(0) scale(1)', boxShadow: '0 8px 20px rgba(0,0,0,0.08)' }
+          ], { duration: 300, easing: 'ease-out' });
+        });
+      });
+
+      // smooth scroll to sorry section
+      setTimeout(()=> {
+        sorrySection.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 300);
+    }
+
+    // allow pressing Enter to open best moments when focused on the button
+    showMomBtn.addEventListener && showMomBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') showBestMoments();
+    });
+
+    // Accessibility: if user prefers reduced motion, don't delay or animate
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      // remove transitions
+      document.documentElement.style.setProperty('--reduced-motion','1');
+    }
+  </script>
+</body>
+</html>
